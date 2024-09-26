@@ -3179,5 +3179,4 @@ const mcqs = [
         answer: "B. A subgraph of G that connects all nodes with the minimum total edge weight.",
         explanation: " A minimum spanning tree (MST) is a subset of edges from the original graph that connects all nodes exactly once while minimizing the total weight of the edges in the tree. Option A focuses only on the number of edges, not their weight. Option C includes all edges, which might not be minimal. Option D describes a subgraph with only cycles, which is not a characteristic of MSTs. "
     },
-]
-;
+];
