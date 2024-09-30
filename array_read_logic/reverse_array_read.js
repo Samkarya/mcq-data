@@ -87,6 +87,7 @@ function highlightSyllabus(page) {
     contactFormMessage.value = `Describe issue with MCQ Question No: ${mcqNumber}, Page No: ${pageNumber}, URL: ${window.location.href}`;
 
     document.getElementById('contact-popup-overlay').style.display = 'flex';
+      document.getElementById('contact-popup-overlay').style.opacity = '1';
 }
 
 
