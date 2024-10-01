@@ -1,4 +1,4 @@
-const mcqs = [
+export const mcqs = [
     {
         question: " The outermost cylindrical surface of a hard disk platter is called:",
         options: [' Track', ' Sector', ' Head', ' Cluster'],
