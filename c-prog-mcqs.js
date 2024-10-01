@@ -1,4 +1,4 @@
-export const mcqs = 
+const mcqs = 
 [
     {
         question: " What does the file mode 'r' indicate when used with <samp>fopen</samp> in C?",
