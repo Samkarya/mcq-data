@@ -1,4 +1,4 @@
-const mcqs = [
+export const mcqs = [
     {
         question: "Which of the following logic gates is known as the 'universal gate' because it can be used to create any other type of gate?",
         options: ['AND', 'OR', 'NAND', 'XOR'],
