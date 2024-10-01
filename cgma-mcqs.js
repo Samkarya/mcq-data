@@ -1,4 +1,4 @@
-const mcqs = [
+export const mcqs = [
     {
         question: "  Multimedia is used for various reasons.  One key motivator is:    ",
         options: ['  Following the latest trends in technology, regardless of whether multimedia elements enhance the message or user experience.    ', '  Effectively communicating ideas, engaging audiences, and delivering information in a compelling and interactive way.    ', '  Limiting content creation to text-based formats, neglecting the potential of multimedia to enrich the user experience.    ', '  Focusing solely on creating visually appealing content, without considering the clarity or purpose of the message being conveyed.     '],
