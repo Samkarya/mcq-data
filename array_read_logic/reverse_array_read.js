@@ -4,7 +4,7 @@ const config = window.mcqConfig;
 async function initializeMCQs() {
     try {
         const module = await import(config.mcqFilePath);
-        mcqs = module.mcqs;
+        const mcqs = module.mcqs;
         renderMCQs(currentPage);
     } catch (error) {
         console.error('Error loading MCQs:', error);
