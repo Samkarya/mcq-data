@@ -1,4 +1,4 @@
-let mcqs =[];
+
 const config = window.mcqConfig;
 
 async function initializeMCQs() {
