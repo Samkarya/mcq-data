@@ -1,15 +1,3 @@
-
-const config = window.mcqConfig;
-
-async function initializeMCQs() {
-    try {
-        const module = await import(config.mcqFilePath);
-        const mcqs = module.mcqs;
-        renderMCQs(currentPage);
-    } catch (error) {
-        console.error('Error loading MCQs:', error);
-    }
-}
 const itemsPerPage = 10;
 let currentPage = parseInt(sessionStorage.getItem('currentPage')) || 1;
 
