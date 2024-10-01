@@ -1,4 +1,4 @@
-const mcqs = [
+export const mcqs = [
     {
         question: "What is the primary goal of configuration management in software engineering?",
         options: ['To write code', 'To manage changes systematically', 'To design software architecture', 'To conduct testing'],
