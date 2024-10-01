@@ -131,4 +131,7 @@ window.addEventListener('load', () => {
     }
 });
 // Initial render
-initializeMCQs();
+document.addEventListener('DOMContentLoaded', function() {
+  initializeMCQs();
+});
+
