@@ -1,4 +1,4 @@
-const mcqs = [
+export const mcqs = [
     {
         question: " Given three jobs with processing times on two machines: Job A (4, 6), Job B (2, 5), Job C (3, 7). Using Johnson's Rule, what is the optimal job sequence?",
         options: [' A, B, C  ', ' B, A, C  ', ' C, A, B  ', ' B, C, A  '],
