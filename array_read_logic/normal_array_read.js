@@ -1,4 +1,4 @@
-
+export function initializeMCQRenderer(mcqs) {
 
 const itemsPerPage = 10;
 let currentPage = parseInt(sessionStorage.getItem('currentPage')) || 1;
@@ -115,3 +115,4 @@ window.addEventListener('load', () => {
 
 // Initial render
 renderMCQs(currentPage);
+}
