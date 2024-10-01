@@ -1,4 +1,4 @@
-const mcqs = [
+export const mcqs = [
     {
         question: " The method of generating functions involves expressing a sequence as the:    ",
         options: [' Summation of its terms.    ', ' Product of its terms.    ', ' Derivative of a function.    ', ' Coefficients in the expansion of a specific function.    '],
