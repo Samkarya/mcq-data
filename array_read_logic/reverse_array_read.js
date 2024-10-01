@@ -1,3 +1,4 @@
+ import { mcqs } from './c-prog-mcqs.js';
 const itemsPerPage = 10;
 let currentPage = parseInt(sessionStorage.getItem('currentPage')) || 1;
 
