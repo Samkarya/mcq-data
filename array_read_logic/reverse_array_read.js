@@ -12,16 +12,24 @@ export function initializeMCQRenderer(mcqs) {
 
         for (let i = start; i >= end && i >= 0; i--) {
             const mcq = mcqs[i];
+            const questionNumber = mcqs.length - i;
+            
+            // Create unique ID for the question
+            const questionId = `question-${questionNumber}`;
+            
             const mcqHTML = `
-                <div class="question-box">
+                <div class="question-box" id="${questionId}">
                     <div class="question">
-                        <div id='question-header'><h3>Question: ${mcqs.length - i}</h3><div class="report-btn" onclick="window.openContactForm(${mcqs.length - i}, ${currentPage})">⚠</div></div>
+                        <div id='question-header'><h3>Question: ${questionNumber}</h3><div class="report-btn" onclick="window.openContactForm()">⚠</div></div>
                         <p><b>${mcq.question}</b></p>
                     </div>
                     
                     <div class="option">
-                        <ol type="A">
-                            ${mcq.options.map(option => `<li>${option}</li>`).join('')}
+                        <ol type="A" class="interactive-options">
+                            ${mcq.options.map((option, index) => {
+                                const letter = String.fromCharCode(65 + index); // A, B, C, D...
+                                return `<li data-option="${letter}" class="option-item">${option}</li>`;
+                            }).join('')}
                         </ol>
                     </div>
                     <div class="answer">
@@ -33,12 +41,13 @@ export function initializeMCQRenderer(mcqs) {
                             </div>
                         </details>
                     </div>
+                    <div class="feedback-message" style="display: none; margin-top: 10px; padding: 8px; border-radius: 4px; text-align: center; font-weight: bold;"></div>
                 </div>
             `;
             mcqContainer.innerHTML += mcqHTML;
 
             // Insert ad after every 4th question
-            if ((mcqs.length - i) % 4 === 0 && i !== end) {
+            if (questionNumber % 4 === 0 && i !== end) {
                 const adHTML = `
                     <div class="adunit">
                         <ins class="adsbygoogle"
@@ -52,8 +61,72 @@ export function initializeMCQRenderer(mcqs) {
                 mcqContainer.innerHTML += adHTML;
             }
         }
+        
+        // Add event listeners to options after rendering
+        addOptionClickHandlers();
+        
         updatePagination();
         highlightSyllabus(page);
+    }
+
+    function addOptionClickHandlers() {
+        const optionItems = document.querySelectorAll('.option-item');
+        
+        optionItems.forEach(option => {
+            option.addEventListener('click', function() {
+                // Get the question box container
+                const questionBox = this.closest('.question-box');
+                
+                // If already answered, don't do anything
+                if (questionBox.classList.contains('answered')) {
+                    return;
+                }
+                
+                // Get the correct answer from the details section
+                const correctAnswerText = questionBox.querySelector('.answer p b').innerText;
+                const correctAnswer = correctAnswerText.replace('Correct Answer: ', '');
+                
+                // Get the selected option
+                const selectedOption = this.getAttribute('data-option');
+                
+                // Get the feedback message element
+                const feedbackElement = questionBox.querySelector('.feedback-message');
+                
+                // Mark all options as normal first
+                questionBox.querySelectorAll('.option-item').forEach(item => {
+                    item.classList.remove('correct-option', 'incorrect-option');
+                });
+                
+                // Check if the answer is correct
+                if (selectedOption === correctAnswer) {
+                    // Mark as correct
+                    this.classList.add('correct-option');
+                    feedbackElement.textContent = 'Correct!';
+                    feedbackElement.style.backgroundColor = '#d4edda';
+                    feedbackElement.style.color = '#155724';
+                } else {
+                    // Mark selected as incorrect
+                    this.classList.add('incorrect-option');
+                    
+                    // Highlight the correct option
+                    questionBox.querySelector(`.option-item[data-option="${correctAnswer}"]`)
+                        .classList.add('correct-option');
+                    
+                    feedbackElement.textContent = 'Incorrect. The correct answer is ' + correctAnswer;
+                    feedbackElement.style.backgroundColor = '#f8d7da';
+                    feedbackElement.style.color = '#721c24';
+                }
+                
+                // Show the feedback
+                feedbackElement.style.display = 'block';
+                
+                // Mark question as answered
+                questionBox.classList.add('answered');
+                
+                // Automatically open the explanation
+                questionBox.querySelector('details').setAttribute('open', true);
+            });
+        });
     }
 
     function updatePagination() {
@@ -78,12 +151,8 @@ export function initializeMCQRenderer(mcqs) {
     }
 
     // Make functions available globally
-    window.openContactForm = function(mcqNumber, pageNumber) {
-        const contactFormMessage = document.querySelector('.contact-form-email-message');
-        contactFormMessage.value = `Describe issue with MCQ Question No: ${mcqNumber}, Page No: ${pageNumber}, URL: ${window.location.href}`;
-
-        document.getElementById('contact-popup-overlay').style.display = 'flex';
-        document.getElementById('contact-popup-overlay').style.opacity = '1';
+    window.openContactForm = function() {        
+  window.open("https://bcaexamprep.blogspot.com/p/support.html?section=report", "_blank");
     };
 
     window.navigateToPage = function(page) {
@@ -107,6 +176,22 @@ export function initializeMCQRenderer(mcqs) {
             location.reload();
         }
     });
+
+    // Add a reset button functionality to attempt questions again
+    window.resetQuestions = function() {
+        const questionBoxes = document.querySelectorAll('.question-box');
+        questionBoxes.forEach(box => {
+            box.classList.remove('answered');
+            box.querySelectorAll('.option-item').forEach(item => {
+                item.classList.remove('correct-option', 'incorrect-option');
+            });
+            const feedbackElement = box.querySelector('.feedback-message');
+            if (feedbackElement) {
+                feedbackElement.style.display = 'none';
+            }
+            box.querySelector('details').removeAttribute('open');
+        });
+    };
 
     // Scroll to the 'syllabus' div after page load
     window.addEventListener('load', () => {
