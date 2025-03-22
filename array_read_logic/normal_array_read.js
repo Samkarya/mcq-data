@@ -20,7 +20,7 @@ export function initializeMCQRenderer(mcqs) {
             const mcqHTML = `
                 <div class="question-box" id="${questionId}">
                     <div class="question">
-                        <div id='question-header'><h3>Question: ${questionNumber}</h3><div class="report-btn" onclick="window.openContactForm()">⚠</div></div>
+                        <div id='question-header'><h3>Question: ${questionNumber}</h3><div class="report-btn" onclick="window.openContactForm(${questionNumber})">⚠</div></div>
                         <p><b>${mcq.question}</b></p>
                     </div>
                     
@@ -76,15 +76,15 @@ export function initializeMCQRenderer(mcqs) {
             option.addEventListener('click', function() {
                 // Get the question box container
                 const questionBox = this.closest('.question-box');
-                
                 // If already answered, don't do anything
                 if (questionBox.classList.contains('answered')) {
                     return;
                 }
                 
                 // Get the correct answer from the details section
-                const correctAnswerText = questionBox.querySelector('.answer p b').innerText;
-                const correctAnswer = correctAnswerText.replace('Correct Answer: ', '');
+                const correctAnswerText = questionBox.querySelector('.answer p i b').innerHTML;
+                const match = correctAnswerText.match(/Correct Answer:\s*([A-D])/);
+                const correctAnswer = match ? match[1] : null;
                 
                 // Get the selected option
                 const selectedOption = this.getAttribute('data-option');
@@ -160,9 +160,13 @@ export function initializeMCQRenderer(mcqs) {
     }
 
     // Make functions available globally
-    window.openContactForm = function() {        
-        window.open("https://bcaexamprep.blogspot.com/p/support.html?section=report", "_blank");
-    };
+    window.openContactForm = function(questionNumber) {
+    const currentPage = parseInt(sessionStorage.getItem('currentPage')) || 1;
+    const reportURL = `https://bcaexamprep.blogspot.com/p/support.html?section=report&type=mcqs&page=${currentPage}&question=${questionNumber}&from=${encodeURIComponent(window.location.href)}`;
+    
+    window.open(reportURL, "_blank");
+};
+
 
     window.navigateToPage = function(page) {
         sessionStorage.setItem('currentPage', page);
@@ -223,3 +227,5 @@ export function initializeMCQRenderer(mcqs) {
     // Initial render
     renderMCQs(currentPage);
 }
+    
+    initializeMCQRenderer(mcqs, true);
