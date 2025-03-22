@@ -227,5 +227,3 @@ export function initializeMCQRenderer(mcqs) {
     // Initial render
     renderMCQs(currentPage);
 }
-    
-    initializeMCQRenderer(mcqs, true);
