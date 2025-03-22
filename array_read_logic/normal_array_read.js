@@ -70,67 +70,66 @@ export function initializeMCQRenderer(mcqs) {
     }
 
     function addOptionClickHandlers() {
-    const optionItems = document.querySelectorAll('.option-item');
-    
-    optionItems.forEach(option => {
-        option.addEventListener('click', function() {
-            // Get the question box container
-            const questionBox = this.closest('.question-box');
-            
-            // If already answered, don't do anything
-            if (questionBox.classList.contains('answered')) {
-                return;
-            }
-            
-            // Get the correct answer from the details section
-            const correctAnswerText = questionBox.querySelector('.answer p b').innerText;
-            
-            // Extract just the letter (A, B, C, D) from the answer text
-            const answerMatch = correctAnswerText.match(/^Correct Answer: ([A-D])/i);
-            const correctAnswer = answerMatch ? answerMatch[1] : null;
-            
-            // Get the selected option
-            const selectedOption = this.getAttribute('data-option');
-            
-            // Get the feedback message element
-            const feedbackElement = questionBox.querySelector('.feedback-message');
-            
-            // Mark all options as normal first
-            questionBox.querySelectorAll('.option-item').forEach(item => {
-                item.classList.remove('correct-option', 'incorrect-option');
+        const optionItems = document.querySelectorAll('.option-item');
+        
+        optionItems.forEach(option => {
+            option.addEventListener('click', function() {
+                // Get the question box container
+                const questionBox = this.closest('.question-box');
+                
+                // If already answered, don't do anything
+                if (questionBox.classList.contains('answered')) {
+                    return;
+                }
+                
+                // Get the correct answer from the details section
+                const correctAnswerText = questionBox.querySelector('.answer p b').innerText;
+                const correctAnswer = correctAnswerText.replace('Correct Answer: ', '');
+                
+                // Get the selected option
+                const selectedOption = this.getAttribute('data-option');
+                
+                // Get the feedback message element
+                const feedbackElement = questionBox.querySelector('.feedback-message');
+                
+                // Mark all options as normal first
+                questionBox.querySelectorAll('.option-item').forEach(item => {
+                    item.classList.remove('correct-option', 'incorrect-option');
+                });
+                
+                // Check if the answer is correct
+                if (selectedOption === correctAnswer) {
+                    // Mark as correct
+                    this.classList.add('correct-option');
+                    feedbackElement.textContent = 'Correct!';
+                    feedbackElement.style.backgroundColor = '#d4edda';
+                    feedbackElement.style.color = '#155724';
+                } else {
+                    // Mark selected as incorrect
+                    this.classList.add('incorrect-option');
+                    
+                    // Find and highlight the correct option - with error handling
+                    const correctElement = questionBox.querySelector(`.option-item[data-option="${correctAnswer}"]`);
+                    if (correctElement) {
+                        correctElement.classList.add('correct-option');
+                    }
+                    
+                    feedbackElement.textContent = 'Incorrect. The correct answer is ' + correctAnswer;
+                    feedbackElement.style.backgroundColor = '#f8d7da';
+                    feedbackElement.style.color = '#721c24';
+                }
+                
+                // Show the feedback
+                feedbackElement.style.display = 'block';
+                
+                // Mark question as answered
+                questionBox.classList.add('answered');
+                
+                // Automatically open the explanation
+                questionBox.querySelector('details').setAttribute('open', true);
             });
-            
-            // Check if the answer is correct
-            if (selectedOption === correctAnswer) {
-                // Mark as correct
-                this.classList.add('correct-option');
-                feedbackElement.textContent = 'Correct!';
-                feedbackElement.style.backgroundColor = '#d4edda';
-                feedbackElement.style.color = '#155724';
-            } else {
-                // Mark selected as incorrect
-                this.classList.add('incorrect-option');
-                
-                // Highlight the correct option
-                questionBox.querySelector(`.option-item[data-option="${correctAnswer}"]`)
-                    .classList.add('correct-option');
-                
-                feedbackElement.textContent = 'Incorrect. The correct answer is ' + correctAnswer;
-                feedbackElement.style.backgroundColor = '#f8d7da';
-                feedbackElement.style.color = '#721c24';
-            }
-            
-            // Show the feedback
-            feedbackElement.style.display = 'block';
-            
-            // Mark question as answered
-            questionBox.classList.add('answered');
-            
-            // Automatically open the explanation
-            questionBox.querySelector('details').setAttribute('open', true);
         });
-    });
-}
+    }
 
     function updatePagination() {
         const pageInfo = document.getElementById('page-info');
@@ -141,21 +140,28 @@ export function initializeMCQRenderer(mcqs) {
     }
 
     function highlightSyllabus(page) {
+        // First remove active class from all spans
         document.querySelectorAll('.syllabus span').forEach(item => {
             item.classList.remove('active');
         });
 
-        const spanItem = document.querySelector(`span[onclick="window.navigateToPage(${page})"]`);
+        // Try to find the span element for the current page
+        const spanItem = document.querySelector(`span[onclick="navigateToPage(${page})"]`) || 
+                         document.querySelector(`span[onclick="window.navigateToPage(${page})"]`);
         
         if (spanItem) {
             spanItem.classList.add('active');
-            spanItem.closest('details').setAttribute('open', true);
+            // Make sure the parent details element is open
+            const detailsParent = spanItem.closest('details');
+            if (detailsParent) {
+                detailsParent.setAttribute('open', true);
+            }
         }
     }
 
     // Make functions available globally
     window.openContactForm = function() {        
-  window.open("https://bcaexamprep.blogspot.com/p/support.html?section=report", "_blank");
+        window.open("https://bcaexamprep.blogspot.com/p/support.html?section=report", "_blank");
     };
 
     window.navigateToPage = function(page) {
@@ -164,21 +170,28 @@ export function initializeMCQRenderer(mcqs) {
     };
 
     // Event Listeners
-    document.getElementById('prev-btn').addEventListener('click', () => {
-        if (currentPage > 1) {
-            currentPage--;
-            sessionStorage.setItem('currentPage', currentPage);
-            location.reload();
-        }
-    });
-
-    document.getElementById('next-btn').addEventListener('click', () => {
-        if (currentPage < Math.ceil(mcqs.length / itemsPerPage)) {
-            currentPage++;
-            sessionStorage.setItem('currentPage', currentPage);
-            location.reload();
-        }
-    });
+    const prevBtn = document.getElementById('prev-btn');
+    const nextBtn = document.getElementById('next-btn');
+    
+    if (prevBtn) {
+        prevBtn.addEventListener('click', () => {
+            if (currentPage > 1) {
+                currentPage--;
+                sessionStorage.setItem('currentPage', currentPage);
+                location.reload();
+            }
+        });
+    }
+    
+    if (nextBtn) {
+        nextBtn.addEventListener('click', () => {
+            if (currentPage < Math.ceil(mcqs.length / itemsPerPage)) {
+                currentPage++;
+                sessionStorage.setItem('currentPage', currentPage);
+                location.reload();
+            }
+        });
+    }
 
     // Add a reset button functionality to attempt questions again
     window.resetQuestions = function() {
@@ -192,7 +205,10 @@ export function initializeMCQRenderer(mcqs) {
             if (feedbackElement) {
                 feedbackElement.style.display = 'none';
             }
-            box.querySelector('details').removeAttribute('open');
+            const details = box.querySelector('details');
+            if (details) {
+                details.removeAttribute('open');
+            }
         });
     };
 
