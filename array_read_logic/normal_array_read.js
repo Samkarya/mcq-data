@@ -70,64 +70,67 @@ export function initializeMCQRenderer(mcqs) {
     }
 
     function addOptionClickHandlers() {
-        const optionItems = document.querySelectorAll('.option-item');
-        
-        optionItems.forEach(option => {
-            option.addEventListener('click', function() {
-                // Get the question box container
-                const questionBox = this.closest('.question-box');
-                
-                // If already answered, don't do anything
-                if (questionBox.classList.contains('answered')) {
-                    return;
-                }
-                
-                // Get the correct answer from the details section
-                const correctAnswerText = questionBox.querySelector('.answer p b').innerText;
-                const correctAnswer = correctAnswerText.replace('Correct Answer: ', '');
-                
-                // Get the selected option
-                const selectedOption = this.getAttribute('data-option');
-                
-                // Get the feedback message element
-                const feedbackElement = questionBox.querySelector('.feedback-message');
-                
-                // Mark all options as normal first
-                questionBox.querySelectorAll('.option-item').forEach(item => {
-                    item.classList.remove('correct-option', 'incorrect-option');
-                });
-                
-                // Check if the answer is correct
-                if (selectedOption === correctAnswer) {
-                    // Mark as correct
-                    this.classList.add('correct-option');
-                    feedbackElement.textContent = 'Correct!';
-                    feedbackElement.style.backgroundColor = '#d4edda';
-                    feedbackElement.style.color = '#155724';
-                } else {
-                    // Mark selected as incorrect
-                    this.classList.add('incorrect-option');
-                    
-                    // Highlight the correct option
-                    questionBox.querySelector(`.option-item[data-option="${correctAnswer}"]`)
-                        .classList.add('correct-option');
-                    
-                    feedbackElement.textContent = 'Incorrect. The correct answer is ' + correctAnswer;
-                    feedbackElement.style.backgroundColor = '#f8d7da';
-                    feedbackElement.style.color = '#721c24';
-                }
-                
-                // Show the feedback
-                feedbackElement.style.display = 'block';
-                
-                // Mark question as answered
-                questionBox.classList.add('answered');
-                
-                // Automatically open the explanation
-                questionBox.querySelector('details').setAttribute('open', true);
+    const optionItems = document.querySelectorAll('.option-item');
+    
+    optionItems.forEach(option => {
+        option.addEventListener('click', function() {
+            // Get the question box container
+            const questionBox = this.closest('.question-box');
+            
+            // If already answered, don't do anything
+            if (questionBox.classList.contains('answered')) {
+                return;
+            }
+            
+            // Get the correct answer from the details section
+            const correctAnswerText = questionBox.querySelector('.answer p b').innerText;
+            
+            // Extract just the letter (A, B, C, D) from the answer text
+            const answerMatch = correctAnswerText.match(/^Correct Answer: ([A-D])/i);
+            const correctAnswer = answerMatch ? answerMatch[1] : null;
+            
+            // Get the selected option
+            const selectedOption = this.getAttribute('data-option');
+            
+            // Get the feedback message element
+            const feedbackElement = questionBox.querySelector('.feedback-message');
+            
+            // Mark all options as normal first
+            questionBox.querySelectorAll('.option-item').forEach(item => {
+                item.classList.remove('correct-option', 'incorrect-option');
             });
+            
+            // Check if the answer is correct
+            if (selectedOption === correctAnswer) {
+                // Mark as correct
+                this.classList.add('correct-option');
+                feedbackElement.textContent = 'Correct!';
+                feedbackElement.style.backgroundColor = '#d4edda';
+                feedbackElement.style.color = '#155724';
+            } else {
+                // Mark selected as incorrect
+                this.classList.add('incorrect-option');
+                
+                // Highlight the correct option
+                questionBox.querySelector(`.option-item[data-option="${correctAnswer}"]`)
+                    .classList.add('correct-option');
+                
+                feedbackElement.textContent = 'Incorrect. The correct answer is ' + correctAnswer;
+                feedbackElement.style.backgroundColor = '#f8d7da';
+                feedbackElement.style.color = '#721c24';
+            }
+            
+            // Show the feedback
+            feedbackElement.style.display = 'block';
+            
+            // Mark question as answered
+            questionBox.classList.add('answered');
+            
+            // Automatically open the explanation
+            questionBox.querySelector('details').setAttribute('open', true);
         });
-    }
+    });
+}
 
     function updatePagination() {
         const pageInfo = document.getElementById('page-info');
